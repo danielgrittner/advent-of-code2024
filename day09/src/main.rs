@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use std::collections::VecDeque;
+use std::fs::read_to_string;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Block {
@@ -11,14 +11,14 @@ impl Block {
     fn is_empty_block(&self) -> bool {
         match self {
             Self::Empty => true,
-            _ => false
+            _ => false,
         }
     }
 
     fn get_file_id(&self) -> usize {
         match self {
             Self::FileBlock { id } => *id,
-            _ => panic!("Not a file block!")
+            _ => panic!("Not a file block!"),
         }
     }
 }
@@ -40,7 +40,12 @@ fn read_input(path: &str) -> std::io::Result<Vec<(usize, Block)>> {
 }
 
 fn get_range_sum(from: usize, to: usize) -> usize {
-    (to * (to + 1)) / 2 - (if from == 0 { 0 } else { (from * (from - 1)) / 2 })
+    (to * (to + 1)) / 2
+        - (if from == 0 {
+            0
+        } else {
+            (from * (from - 1)) / 2
+        })
 }
 
 fn compactify_disk_single_blocks(disk: &Vec<(usize, Block)>) -> Vec<(usize, Block)> {
@@ -56,9 +61,7 @@ fn compactify_disk_single_blocks(disk: &Vec<(usize, Block)>) -> Vec<(usize, Bloc
     let mut left = 0;
     while left < right {
         match disk[left].1 {
-            Block::FileBlock { .. } => {
-                compacted_disk.push(disk[left])
-            },
+            Block::FileBlock { .. } => compacted_disk.push(disk[left]),
             Block::Empty => {
                 let mut space = disk[left].0;
 
@@ -80,12 +83,17 @@ fn compactify_disk_single_blocks(disk: &Vec<(usize, Block)>) -> Vec<(usize, Bloc
                 }
             }
         }
-        
+
         left += 1;
     }
 
     if remaining_right > 0 {
-        compacted_disk.push((remaining_right, Block::FileBlock { id: disk[right].1.get_file_id() }));
+        compacted_disk.push((
+            remaining_right,
+            Block::FileBlock {
+                id: disk[right].1.get_file_id(),
+            },
+        ));
     }
 
     compacted_disk
@@ -101,7 +109,7 @@ fn calculate_checksum(disk: &Vec<(usize, Block)>) -> usize {
         }
         disk_idx += *cnt;
     }
-    
+
     checksum
 }
 
@@ -129,14 +137,14 @@ fn compactify_disk_entire_files(disk: &Vec<(usize, Block)>) -> Vec<(usize, Block
         }
 
         let mut space = disk[idx].0;
-        
+
         while space > 0 {
             let mut max_file_id = None;
             for file_size in 0..=space {
                 if let Some(&idx) = indexed_files[file_size].back() {
                     max_file_id = match max_file_id {
                         Some(prev) => Some(std::cmp::max(prev, (idx, file_size))),
-                        None => Some((idx, file_size))
+                        None => Some((idx, file_size)),
                     };
                 }
             }
@@ -146,8 +154,8 @@ fn compactify_disk_entire_files(disk: &Vec<(usize, Block)>) -> Vec<(usize, Block
                     let moved_file_idx = indexed_files[target_file_size].pop_back().unwrap();
                     compacted_disk.push(disk[moved_file_idx]);
                     space -= target_file_size;
-                },
-                None => break
+                }
+                None => break,
             }
         }
 
@@ -155,7 +163,7 @@ fn compactify_disk_entire_files(disk: &Vec<(usize, Block)>) -> Vec<(usize, Block
             compacted_disk.push((space, Block::Empty));
         }
     }
- 
+
     compacted_disk
 }
 
@@ -179,7 +187,6 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
-
 
 /*
 
@@ -205,7 +212,7 @@ Compacted Result:
 
 022111222
 
-=> 0 * 0 + (1 + 2) * 2 + (3 + 4 + 5) * 1 + (6 + 7 + 8) * 2 = 60 
+=> 0 * 0 + (1 + 2) * 2 + (3 + 4 + 5) * 1 + (6 + 7 + 8) * 2 = 60
 
 
 */
