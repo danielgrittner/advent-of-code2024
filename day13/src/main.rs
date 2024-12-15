@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use regex::Regex;
+use std::fs::read_to_string;
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 struct Game {
@@ -64,10 +64,10 @@ fn solve2(game: Game, is_part_2: bool) -> i64 {
     // | p1 |   | a1    b1  |   | t1 |
     // |    | = |           | * |    |
     // | p2 |   | a2    b2  |   | t2 |
-    
+
     let mut equation_system = [
         [game.button_a.0 as f64, game.button_b.0 as f64],
-        [game.button_a.1 as f64, game.button_b.1 as f64]
+        [game.button_a.1 as f64, game.button_b.1 as f64],
     ];
     let mut target = [prize_x as f64, prize_y as f64];
 
@@ -98,7 +98,7 @@ fn solve2(game: Game, is_part_2: bool) -> i64 {
 
     // t1 = (p1 - b1 * t2) / a1
     let t1 = target[0] / equation_system[0][0];
-    
+
     equation_system[0][0] = 1.0;
     target[0] = t1;
 
@@ -109,7 +109,9 @@ fn solve2(game: Game, is_part_2: bool) -> i64 {
         (t1.floor() as i64, t2.floor() as i64),
     ] {
         // Check correctness of result
-        if game.button_a.0 * t1 + game.button_b.0 * t2 == prize_x && game.button_a.1 * t1 + game.button_b.1 * t2 == prize_y {
+        if game.button_a.0 * t1 + game.button_b.0 * t2 == prize_x
+            && game.button_a.1 * t1 + game.button_b.1 * t2 == prize_y
+        {
             return COST_BUTTON_A * t1 + COST_BUTTON_B * t2;
         }
     }
